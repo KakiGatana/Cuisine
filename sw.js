@@ -1,5 +1,5 @@
 // Garde l'appli disponible hors connexion. Réseau d'abord, cache en secours.
-const CACHE = 'carnet-recettes-v2';
+const CACHE = 'carnet-recettes-v3';
 const FILES = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './img/doodles.svg', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

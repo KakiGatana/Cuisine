@@ -1289,6 +1289,15 @@ const EXEMPLE_PRIX = {
    Démarrage
    ========================================================= */
 
+// Comme une appli : pas de zoom (pincement, Ctrl + molette, Ctrl +). Le double-tap est bloqué en CSS.
+['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', e => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('contextmenu', e => { if (!e.target.closest('input, textarea, .steps, .ing-list, .notes')) e.preventDefault(); });
+
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
