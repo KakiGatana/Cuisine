@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Carnet de recettes</title>
+  <meta name="description" content="Recueil de recettes, planning de la semaine et liste de courses.">
+  <meta name="theme-color" content="#c2562f">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Recettes">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="title">Recettes</h1>
+    <button class="icon-btn" data-action="menu" aria-label="Menu">⋯</button>
+  </header>
+
+  <main id="view"></main>
+
+  <nav class="tabbar" aria-label="Navigation">
+    <button data-tab="recettes"><span aria-hidden="true">📖</span>Recettes</button>
+    <button data-tab="semaine"><span aria-hidden="true">📅</span>Semaine</button>
+    <button data-tab="courses"><span aria-hidden="true">🛒</span>Courses</button>
+    <button data-tab="prix"><span aria-hidden="true">🏷️</span>Prix</button>
+  </nav>
+
+  <dialog id="modal"><div id="modal-body"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <input type="file" id="photo-file" accept="image/*" hidden>
+
+  <script src="app.js"></script>
+</body>
+</html>
