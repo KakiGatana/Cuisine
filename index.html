@@ -5,27 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Carnet de recettes</title>
   <meta name="description" content="Recueil de recettes, planning de la semaine et liste de courses.">
-  <meta name="theme-color" content="#c2562f">
+  <meta name="theme-color" content="#d4572f">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Recettes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;700;800&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Animation d'ouverture -->
+  <div id="splash" aria-hidden="true">
+    <div class="splash-glow"></div>
+    <div class="splash-vichy"></div>
+    <div class="splash-inner">
+      <svg class="splash-pot" viewBox="60 40 392 380">
+        <defs>
+          <linearGradient id="sp-pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7563"/><stop offset="1" stop-color="#1c4a3e"/></linearGradient>
+          <linearGradient id="sp-lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a9682"/><stop offset="1" stop-color="#2f7563"/></linearGradient>
+        </defs>
+        <ellipse class="sp-shadow" cx="256" cy="398" rx="150" ry="14" fill="#5a1d10" opacity=".25"/>
+        <g class="sp-steam" fill="none" stroke="#fff6ea" stroke-width="14" stroke-linecap="round">
+          <path pathLength="1" d="M206 200c-18-22 18-34 0-60s18-34 0-60"/>
+          <path pathLength="1" d="M256 190c-18-22 18-34 0-62s18-34 0-62"/>
+          <path pathLength="1" d="M306 200c-18-22 18-34 0-60s18-34 0-60"/>
+        </g>
+        <g class="sp-body">
+          <rect x="86" y="258" width="66" height="30" rx="15" fill="#1c4a3e"/>
+          <rect x="360" y="258" width="66" height="30" rx="15" fill="#1c4a3e"/>
+          <path d="M118 246H394V316a76 76 0 0 1-76 76H194a76 76 0 0 1-76-76Z" fill="url(#sp-pot)"/>
+          <rect x="118" y="246" width="276" height="20" fill="#0d2c24" opacity=".22"/>
+          <path d="M148 290v24a50 50 0 0 0 22 42" fill="none" stroke="#fff" stroke-opacity=".33" stroke-width="13" stroke-linecap="round"/>
+          <path d="M296 318c18-26 52-26 62-20-8 22-38 36-62 20Z" fill="#9fcf7a"/>
+        </g>
+        <g class="sp-lid">
+          <path d="M104 248a152 72 0 0 1 304 0Z" fill="url(#sp-lid)"/>
+          <path d="M150 226a120 50 0 0 1 70-36" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="11" stroke-linecap="round"/>
+          <rect x="96" y="240" width="320" height="18" rx="9" fill="#24604f"/>
+          <rect x="236" y="160" width="40" height="22" rx="8" fill="#f2c25c"/>
+          <circle cx="256" cy="160" r="16" fill="#f2c25c"/>
+        </g>
+      </svg>
+      <h1 class="splash-title"><span class="w1">Mon carnet</span><span class="w2">de recettes</span></h1>
+      <p class="splash-sub">Qu’est-ce qu’on mange ?</p>
+    </div>
+  </div>
+
+  <!-- Icônes -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z"/><path d="M12 6.5v13"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r="1" fill="currentColor"/><circle cx="12" cy="14.5" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-basket" viewBox="0 0 24 24"><path d="M3 10h18l-1.8 9a2 2 0 0 1-2 1.6H6.8a2 2 0 0 1-2-1.6Z"/><path d="M7.5 10 11 4M16.5 10 13 4M9 14v3M12 14v3M15 14v3"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7a1 1 0 0 1 .7.3l8 8a1.5 1.5 0 0 1 0 2.1l-7.3 7.3a1.5 1.5 0 0 1-2.1 0l-8-8a1 1 0 0 1-.3-.7Z"/><circle cx="8.5" cy="8.5" r="1.6"/></symbol>
+  </svg>
+
   <header class="topbar">
-    <h1 id="title">Recettes</h1>
-    <button class="icon-btn" data-action="menu" aria-label="Menu">⋯</button>
+    <div class="awning" aria-hidden="true"></div>
+    <div class="topbar-row">
+      <div class="titles">
+        <p class="kicker" id="kicker"></p>
+        <h1 id="title">Recettes</h1>
+      </div>
+      <button class="icon-btn menu-btn" data-action="menu" aria-label="Menu">⋯</button>
+    </div>
   </header>
 
   <main id="view"></main>
 
   <nav class="tabbar" aria-label="Navigation">
-    <button data-tab="recettes"><span aria-hidden="true">📖</span>Recettes</button>
-    <button data-tab="semaine"><span aria-hidden="true">📅</span>Semaine</button>
-    <button data-tab="courses"><span aria-hidden="true">🛒</span>Courses</button>
-    <button data-tab="prix"><span aria-hidden="true">🏷️</span>Prix</button>
+    <button data-tab="recettes"><svg><use href="#i-book"/></svg>Recettes</button>
+    <button data-tab="semaine"><svg><use href="#i-cal"/></svg>Semaine</button>
+    <button data-tab="courses"><svg><use href="#i-basket"/></svg>Courses</button>
+    <button data-tab="prix"><svg><use href="#i-tag"/></svg>Prix</button>
   </nav>
 
   <dialog id="modal"><div id="modal-body"></div></dialog>
@@ -33,6 +88,25 @@
   <input type="file" id="import-file" accept="application/json,.json" hidden>
   <input type="file" id="photo-file" accept="image/*" hidden>
 
+  <script>
+    // Animation d'ouverture : une fois par lancement, touche l'écran pour passer.
+    (function () {
+      var s = document.getElementById('splash');
+      var seen = false;
+      try { seen = sessionStorage.getItem('splash') === '1'; sessionStorage.setItem('splash', '1'); } catch (e) {}
+      if (seen) { s.remove(); return; }
+      document.body.classList.add('splashing');
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var end = function () {
+        if (!s.isConnected || s.classList.contains('out')) return;
+        s.classList.add('out');
+        document.body.classList.remove('splashing');
+        setTimeout(function () { s.remove(); }, 650);
+      };
+      s.addEventListener('click', end);
+      setTimeout(end, reduce ? 900 : 2700);
+    })();
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

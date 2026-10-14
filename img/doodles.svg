@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260" fill="none" stroke="#3a2a20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <!-- fouet -->
+  <g transform="translate(30 30) rotate(-25)">
+    <path d="M0 0v34"/><path d="M0 34c-14 18-12 44 0 50 12-6 14-32 0-50Z"/><path d="M0 34c-6 18-5 40 0 50 5-10 6-32 0-50Z"/>
+  </g>
+  <!-- cuillère en bois -->
+  <g transform="translate(150 20) rotate(30)">
+    <ellipse cx="0" cy="10" rx="10" ry="14"/><path d="M0 24v60"/>
+  </g>
+  <!-- carotte -->
+  <g transform="translate(200 130) rotate(40)">
+    <path d="M0 0l8 46 8-46Z"/><path d="M4 10h6M5 22h5"/><path d="M8 0c-4-10-10-12-14-12M8 0c0-10 2-14 6-16M8 0c4-8 10-10 14-10"/>
+  </g>
+  <!-- fourchette -->
+  <g transform="translate(70 150) rotate(-15)">
+    <path d="M-8 0v16a8 8 0 0 0 16 0V0M0 0v16M0 24v56"/>
+  </g>
+  <!-- feuille -->
+  <g transform="translate(120 120)">
+    <path d="M0 0c10-18 34-18 40-12-6 16-28 24-40 12Z"/><path d="M2 -1c12-6 22-8 34-9"/>
+  </g>
+  <!-- tomate -->
+  <g transform="translate(40 200)">
+    <circle cx="0" cy="0" r="14"/><path d="M-6 -13l6 5 6-5M0 -8v-6"/>
+  </g>
+  <!-- rouleau -->
+  <g transform="translate(150 215) rotate(-20)">
+    <rect x="-22" y="-7" width="44" height="14" rx="6"/><path d="M-22 0h-12M22 0h12"/>
+  </g>
+  <!-- cœur -->
+  <path d="M230 40c-4-6-12-4-12 2 0 6 12 12 12 12s12-6 12-12c0-6-8-8-12-2Z"/>
+</svg>

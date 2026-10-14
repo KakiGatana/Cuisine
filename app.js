@@ -17,6 +17,44 @@ const CAT_EMOJI = {
   'Entrée': '🥗', 'Plat': '🍲', 'Accompagnement': '🥔', 'Soupe': '🥣', 'Salade': '🥬',
   'Dessert': '🍰', 'Petit-déj': '🥐', 'Goûter': '🍪', 'Boisson': '🍹', 'Sauce': '🫙',
 };
+const CAT_COLOR = {
+  'Entrée': '#5fa04c', 'Plat': '#d4572f', 'Accompagnement': '#c99a2e', 'Soupe': '#d06a26', 'Salade': '#4f9a5c',
+  'Dessert': '#d2577f', 'Petit-déj': '#e6a31e', 'Goûter': '#a8693a', 'Boisson': '#4f86c0', 'Sauce': '#8a5aa8',
+};
+const KICKERS = {
+  recettes: () => ({ printemps: 'Vive le printemps 🌱', ete: 'C’est l’été ☀️', automne: 'C’est l’automne 🍂', hiver: 'Bonjour l’hiver ❄️' }[currentSeason()]),
+  semaine: () => 'Au menu cette semaine',
+  courses: () => 'Direction le marché',
+  prix: () => 'Combien ça coûte ?',
+};
+
+// Illustrations
+const POT_ART = `<svg class="empty-art" viewBox="80 40 352 370" aria-hidden="true">
+  <ellipse cx="256" cy="398" rx="150" ry="13" fill="#5a1d10" opacity=".15"/>
+  <g class="steam" fill="none" stroke="#e8b9a3" stroke-width="13" stroke-linecap="round">
+    <path pathLength="1" d="M206 150c-18-22 18-34 0-60"/><path pathLength="1" d="M256 140c-18-22 18-34 0-62"/><path pathLength="1" d="M306 150c-18-22 18-34 0-60"/>
+  </g>
+  <rect x="86" y="258" width="66" height="30" rx="15" fill="#1c4a3e"/><rect x="360" y="258" width="66" height="30" rx="15" fill="#1c4a3e"/>
+  <path d="M118 246H394V316a76 76 0 0 1-76 76H194a76 76 0 0 1-76-76Z" fill="#2f7563"/>
+  <path d="M148 290v24a50 50 0 0 0 22 42" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="13" stroke-linecap="round"/>
+  <path d="M104 248a152 72 0 0 1 304 0Z" fill="#4a9682"/><rect x="96" y="240" width="320" height="18" rx="9" fill="#24604f"/>
+  <circle cx="256" cy="166" r="16" fill="#f2c25c"/><rect x="236" y="166" width="40" height="18" rx="8" fill="#f2c25c"/>
+  <path d="M296 318c18-26 52-26 62-20-8 22-38 36-62 20Z" fill="#9fcf7a"/>
+</svg>`;
+const BASKET_ART = `<svg class="empty-art" viewBox="0 0 200 170" aria-hidden="true">
+  <ellipse cx="100" cy="158" rx="70" ry="7" fill="#5a1d10" opacity=".15"/>
+  <path d="M120 70 158 18" stroke="#e6b35a" stroke-width="16" stroke-linecap="round"/>
+  <path d="M124 64l30-40" stroke="#c98f35" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/>
+  <path d="M70 72 52 30" stroke="#e8742f" stroke-width="13" stroke-linecap="round"/>
+  <path d="M52 30c-6-10-14-10-18-8M52 30c-2-11 2-15 6-17M52 30c6-7 12-8 16-6" stroke="#5fa04c" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <circle cx="98" cy="66" r="17" fill="#e2483a"/><path d="M92 50l6 5 6-5" stroke="#5fa04c" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M60 70 C60 22 140 22 140 70" stroke="#a8693a" stroke-width="7" fill="none"/>
+  <path d="M28 72h144l-14 74a12 12 0 0 1-12 10H54a12 12 0 0 1-12-10Z" fill="#c98f5a"/>
+  <path d="M38 96h124M44 122h112" stroke="#a8693a" stroke-width="4"/>
+  <path d="M70 72v84M100 72v84M130 72v84" stroke="#a8693a" stroke-width="4" opacity=".6"/>
+  <rect x="22" y="66" width="156" height="14" rx="7" fill="#a8693a"/>
+</svg>`;
+
 const TEMPS = [
   { id: '15', label: '≤ 15 min', test: t => t <= 15 },
   { id: '30', label: '≤ 30 min', test: t => t <= 30 },
@@ -440,28 +478,35 @@ function seasonBadges(r) {
   return SAISONS.filter(s => r.saisons.includes(s.id)).map(s => `<span title="${s.label}">${s.emoji}</span>`).join('');
 }
 
-function recipeCard(r) {
+function plate(r) {
+  return `<div class="plate" style="--c: ${CAT_COLOR[r.categorie] || '#d4572f'}" aria-hidden="true">${r.photo ? `<img src="${r.photo}" alt="">` : (CAT_EMOJI[r.categorie] || '🍽️')}</div>`;
+}
+
+function seasonDots(r) {
+  if (!r.saisons.length || r.saisons.length === 4) return '<span>Toute l’année</span>';
+  return `<span class="season-dots">${SAISONS.filter(s => r.saisons.includes(s.id)).map(s => `<i style="--c: var(--s-${s.id})" title="${s.label}"></i>`).join('')}</span>
+    <span>${SAISONS.filter(s => r.saisons.includes(s.id)).map(s => s.label).join(', ')}</span>`;
+}
+
+function recipeCard(r, i = 0) {
   const t = totalTime(r);
-  const thumb = r.photo
-    ? `<img class="thumb" src="${r.photo}" alt="">`
-    : `<div class="thumb thumb-emoji" aria-hidden="true">${CAT_EMOJI[r.categorie] || '🍽️'}</div>`;
-  return `<button class="card recipe-card" data-action="open-recipe" data-id="${r.id}">
-    ${thumb}
+  return `<button class="card recipe-card" style="--i: ${i}; --c: ${CAT_COLOR[r.categorie] || '#d4572f'}" data-action="open-recipe" data-id="${r.id}">
+    ${plate(r)}
     <div class="card-body">
-      <div class="card-title">${esc(r.nom)}${r.favori ? ' <span class="star">★</span>' : ''}</div>
+      <div class="card-title">${esc(r.nom)}</div>
       <div class="card-meta">
-        <span>${esc(r.categorie)}</span>
-        ${t ? `<span>⏱ ${fmtTime(t)}</span>` : ''}
-        <span class="seasons">${seasonBadges(r)}</span>
+        ${t ? `<span class="pill">⏱ ${fmtTime(t)}</span>` : ''}
+        ${seasonDots(r)}
       </div>
     </div>
+    ${r.favori ? '<span class="fav-ribbon star">★</span>' : ''}
   </button>`;
 }
 
 function renderRecettes() {
   if (!state.recipes.length) {
     return `<div class="empty">
-      <div class="empty-emoji">📖</div>
+      ${POT_ART}
       <h2>Ton carnet est vide</h2>
       <p>Ajoute ta première recette, ou charge quelques exemples pour découvrir l’appli.</p>
       <button class="btn primary" data-action="new-recipe">+ Ajouter une recette</button>
@@ -474,7 +519,7 @@ function renderRecettes() {
       <input type="search" id="search" class="input" placeholder="Rechercher une recette, un ingrédient…" value="${esc(ui.q)}" autocomplete="off">
       <div class="chips" role="group" aria-label="Saison">
         ${chip('Toutes saisons', !ui.saison, 'f-saison', '')}
-        ${SAISONS.map(s => chip(`${s.emoji} ${s.label}${s.id === now ? ' •' : ''}`, ui.saison === s.id, 'f-saison', s.id)).join('')}
+        ${SAISONS.map(s => chip(`${s.emoji} ${s.label}${s.id === now ? ' •' : ''}`, ui.saison === s.id, 'f-saison', s.id, `style="--c: var(--s-${s.id})"`)).join('')}
       </div>
       <div class="chips" role="group" aria-label="Temps">
         ${chip('⏱ Tous temps', !ui.temps, 'f-temps', '')}
@@ -502,7 +547,7 @@ function renderRecipeList() {
   if (!el) return;
   const list = filterRecipes(ui);
   el.innerHTML = list.length
-    ? `<p class="count">${list.length} recette${list.length > 1 ? 's' : ''}</p><div class="cards">${list.map(recipeCard).join('')}</div>`
+    ? `<p class="count">${list.length} recette${list.length > 1 ? 's' : ''}</p><div class="cards">${list.map((r, i) => recipeCard(r, i)).join('')}</div>`
     : '<p class="empty-small">Aucune recette ne correspond à ces filtres.</p>';
 }
 
@@ -514,10 +559,11 @@ function weekNav() {
   const start = fromIso(ui.weekStart);
   const end = addDays(start, 6);
   const isCurrent = ui.weekStart === iso(mondayOf(new Date()));
-  return `<div class="weeknav">
+  return `<div class="chalkboard">
     <button class="icon-btn" data-action="week" data-value="-7" aria-label="Semaine précédente">‹</button>
-    <div class="weeknav-label">
-      <strong>${isCurrent ? 'Cette semaine' : 'Semaine'}</strong>
+    <div class="chalk-title">
+      <strong>${ui.tab === 'courses' ? 'Courses' : 'Menu'} ${isCurrent ? 'de la semaine' : 'du ' + shortDate(start)}</strong>
+      <i class="chalk-line"></i>
       <span>du ${shortDate(start)} au ${shortDate(end)}</span>
     </div>
     <button class="icon-btn" data-action="week" data-value="7" aria-label="Semaine suivante">›</button>
@@ -546,15 +592,15 @@ function renderSemaine() {
         </div>`;
       }).join('');
       return `<div class="slot">
-        <div class="slot-label">${r.label}</div>
+        <div class="slot-label">${r.id === 'midi' ? '☀️' : '🌙'}<br>${r.label}</div>
         <div class="slot-items">${items}
           <button class="add-slot" data-action="pick-recipe" data-slot="${slotKey(d, r.id)}">+ Ajouter</button>
         </div>
       </div>`;
     }).join('');
-    return `<section class="day${d === today ? ' today' : ''}">
-      <h3>${jour} <span class="muted">${shortDate(addDays(start, i))}</span></h3>
-      ${slots}
+    return `<section class="day${d === today ? ' today' : ''}" style="--i: ${i}" aria-label="${jour}">
+      <div class="date-badge"><small>${jour.slice(0, 3)}</small><b>${addDays(start, i).getDate()}</b></div>
+      <div class="slots">${slots}</div>
     </section>`;
   }).join('');
 
@@ -562,7 +608,7 @@ function renderSemaine() {
   return `${weekNav()}
     <div class="summary">
       <span>${entries.length} repas prévu${entries.length > 1 ? 's' : ''}</span>
-      ${cost.total ? `<span>≈ ${euro(cost.total)}${cost.missing ? '*' : ''}</span>` : ''}
+      ${cost.total ? `<span class="pill mustard">≈ ${euro(cost.total)}${cost.missing ? '*' : ''}</span>` : ''}
     </div>
     ${days}
     <div class="actions-bottom">
@@ -626,16 +672,16 @@ function renderCourses() {
     ${items.length ? `
       <div class="summary">
         <span>${left} article${left > 1 ? 's' : ''} à acheter</span>
-        <span>${total ? `Total estimé ≈ <b>${euro(total)}</b>` : ''}</span>
+        ${total ? `<span class="pill mustard">≈ <b>${euro(total)}</b></span>` : ''}
       </div>
       ${missing ? `<p class="hint">${missing} article${missing > 1 ? 's' : ''} sans prix. Touche « + prix » pour en noter un (prix La Vie Claire par exemple).</p>` : ''}
-      ${groupHtml}
+      <div class="notepad">${groupHtml}</div>
       <div class="actions-bottom">
         <button class="btn" data-action="share-list">📤 Partager la liste</button>
         <button class="btn ghost" data-action="uncheck-all">Tout décocher</button>
       </div>`
     : `<div class="empty">
-        <div class="empty-emoji">🛒</div>
+        ${BASKET_ART}
         <h2>Rien à acheter pour l’instant</h2>
         <p>Choisis des recettes dans l’onglet <b>Semaine</b> : la liste se remplit toute seule.</p>
         <button class="btn primary" data-tab="semaine">📅 Planifier la semaine</button>
@@ -734,17 +780,17 @@ function showRecipe(id, portions) {
   const steps = r.etapes.split('\n').map(s => s.trim()).filter(Boolean);
   const cost = recipeCost(r, p);
   openModal(`
-    ${r.photo ? `<img class="hero" src="${r.photo}" alt="">` : ''}
+    <div class="hero-wrap">${r.photo ? `<img class="hero" src="${r.photo}" alt="">` : `<div class="hero-art">${plate(r)}</div>`}</div>
     <div class="modal-head">
       <h2>${esc(r.nom)}</h2>
       <button class="icon-btn fav" data-action="toggle-fav" data-id="${r.id}" aria-label="Favori">${r.favori ? '★' : '☆'}</button>
     </div>
     <div class="meta-line">
       <span class="pill">${CAT_EMOJI[r.categorie] || ''} ${esc(r.categorie)}</span>
-      <span class="pill">${seasonBadges(r)}</span>
+      <span class="pill sage">${seasonBadges(r)}</span>
       ${r.prep ? `<span class="pill">🔪 ${fmtTime(r.prep)}</span>` : ''}
       ${r.cuisson ? `<span class="pill">🔥 ${fmtTime(r.cuisson)}</span>` : ''}
-      ${cost.total ? `<span class="pill">≈ ${euro(cost.total)}${cost.missing ? '*' : ''}</span>` : ''}
+      ${cost.total ? `<span class="pill mustard">≈ ${euro(cost.total)}${cost.missing ? '*' : ''}</span>` : ''}
     </div>
     <div class="portions">
       <span>Pour</span>
@@ -784,7 +830,7 @@ function showRecipeForm(id) {
       </div>
       <fieldset>
         <legend>Saisons <span class="muted">(aucune = toute l’année)</span></legend>
-        <div class="chips">${SAISONS.map(s => `<label class="chip check"><input type="checkbox" name="saisons" value="${s.id}" ${saisons.includes(s.id) ? 'checked' : ''}><span>${s.emoji} ${s.label}${s.id === now ? ' •' : ''}</span></label>`).join('')}</div>
+        <div class="chips">${SAISONS.map(s => `<label class="chip check" style="--c: var(--s-${s.id})"><input type="checkbox" name="saisons" value="${s.id}" ${saisons.includes(s.id) ? 'checked' : ''}><span>${s.emoji} ${s.label}${s.id === now ? ' •' : ''}</span></label>`).join('')}</div>
       </fieldset>
       <div class="row">
         <label>Préparation (min)<input name="prep" class="input" type="number" min="0" inputmode="numeric" value="${r?.prep || ''}" placeholder="15"></label>
@@ -838,7 +884,7 @@ function showPicker(slot) {
     <input type="search" id="picker-search" class="input" placeholder="Rechercher…" autocomplete="off">
     <div class="chips">
       ${chip('Toutes', true, 'picker-saison', '')}
-      ${SAISONS.map(s => chip(`${s.emoji} ${s.label}${s.id === now ? ' •' : ''}`, false, 'picker-saison', s.id)).join('')}
+      ${SAISONS.map(s => chip(`${s.emoji} ${s.label}${s.id === now ? ' •' : ''}`, false, 'picker-saison', s.id, `style="--c: var(--s-${s.id})"`)).join('')}
     </div>
     <div id="picker-list" class="picker-list" data-slot="${slot}"></div>
     <div class="modal-actions"><button class="btn ghost" data-action="close">Fermer</button></div>`, body => {
@@ -927,8 +973,10 @@ const TITLES = { recettes: 'Mes recettes', semaine: 'Planning', courses: 'Liste 
 
 function render() {
   $('#title').textContent = TITLES[ui.tab];
+  $('#kicker').textContent = KICKERS[ui.tab]();
   document.querySelectorAll('.tabbar [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
   const view = $('#view');
+  view.classList.remove('enter');
   view.innerHTML = { recettes: renderRecettes, semaine: renderSemaine, courses: renderCourses, prix: renderPrix }[ui.tab]();
   if (ui.tab === 'recettes') renderRecipeList();
   if (ui.tab === 'prix') renderPrixList();
@@ -938,6 +986,10 @@ function setTab(tab) {
   ui.tab = tab;
   closeModal();
   render();
+  const view = $('#view');
+  view.classList.remove('enter');
+  void view.offsetWidth;
+  view.classList.add('enter');
   window.scrollTo(0, 0);
 }
 
@@ -973,6 +1025,7 @@ const actions = {
     r.favori = !r.favori;
     save();
     el.textContent = r.favori ? '★' : '☆';
+    el.classList.toggle('on', r.favori);
     render();
   },
   'f-saison': el => { ui.saison = el.dataset.value || null; render(); },
@@ -1011,7 +1064,8 @@ const actions = {
     const c = state.checked[ui.weekStart] = state.checked[ui.weekStart] || {};
     if (el.checked) c[el.dataset.key] = true; else delete c[el.dataset.key];
     save();
-    setTimeout(render, 150);
+    el.closest('.item')?.classList.toggle('checked', el.checked);
+    setTimeout(render, 450);
   },
   'uncheck-all': () => { delete state.checked[ui.weekStart]; save(); render(); },
   'extra-remove': el => {
@@ -1240,4 +1294,4 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-render();
+setTab('recettes');

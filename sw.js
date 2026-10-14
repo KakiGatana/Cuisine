@@ -1,6 +1,6 @@
 // Garde l'appli disponible hors connexion. Réseau d'abord, cache en secours.
-const CACHE = 'carnet-recettes-v1';
-const FILES = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE = 'carnet-recettes-v2';
+const FILES = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './img/doodles.svg', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -13,7 +13,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
+  const url = new URL(e.request.url);
+  const fonts = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+  if (e.request.method !== 'GET' || (url.origin !== location.origin && !fonts)) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
